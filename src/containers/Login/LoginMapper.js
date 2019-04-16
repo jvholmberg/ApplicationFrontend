@@ -1,15 +1,15 @@
 import _ from 'lodash';
 import { bindActionCreators } from 'redux';
-import { postLogin } from '../../actions';
+import { getJwt } from '../../actions';
 import {
-  reqPostLogin,
-  resPostLogin,
-  errPostLogin,
+  reqGetJwt,
+  resGetJwt,
+  errGetJwt,
 } from '../../selectors';
 
 export const mapStateToProps = (state, props) => {
-  const loginResponse = resPostLogin(state);
-  const loginError = errPostLogin(state);
+  const loginResponse = resGetJwt(state);
+  const loginError = errGetJwt(state);
   return {
     loginResponse,
     loginError,
@@ -18,5 +18,5 @@ export const mapStateToProps = (state, props) => {
 
 export const mapDispatchToProps = (dispatch) =>
   bindActionCreators({
-    postLogin,
+    getJwt,
   }, dispatch);

@@ -1,28 +1,16 @@
 import React, { PureComponent, Fragment } from 'react';
 import PropTypes from 'prop-types';
-import {
-  Form,
-  TextInput,
-  TextInputSkeleton,
-} from 'carbon-components-react';
 
+import RegisterForm from './RegisterForm';
 
 class RegisterView extends PureComponent {
 
   render() {
-
+    const { props } = this;
     return (
-      <Form>
-        register
-        <TextInput
-          name='username'
-          type='text'
-          labelText='Username' />
-        <TextInput
-          name='password'
-          type='password'
-          labelText='Username' />
-      </Form>
+      <RegisterForm
+        error={props.registerError}
+        onSubmit={props.register} />
     );
   }
 }

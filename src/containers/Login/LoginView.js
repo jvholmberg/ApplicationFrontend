@@ -26,7 +26,7 @@ class LoginView extends PureComponent {
     return (
       <LoginForm
         error={props.loginError}
-        onSubmit={props.postLogin} />
+        onSubmit={props.getJwt} />
     );
   }
 }

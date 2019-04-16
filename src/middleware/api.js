@@ -1,7 +1,7 @@
 import _ from 'lodash';
 import moment from 'moment';
 import { format } from 'util';
-import { GET_LOGIN } from '../actions';
+import { REFRESH_JWT } from '../actions';
 import {
   getJwtToken,
   removeJwtToken,
@@ -47,7 +47,7 @@ const makeRequest = (url, method, query, body, restricted, next) => {
 
       // Check if within grace period (24hours)
       if (jwt && grace.isSameOrBefore(now)) {
-        next({ type: `REQ:${GET_LOGIN}/QUEUE` });
+        next({ type: `REQ:${REFRESH_JWT}/QUEUE` });
       }
 
       // Add Authorization header if valid accessToken

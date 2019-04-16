@@ -14,27 +14,14 @@ export const fetchUsers = () => ({
 });
 
 /**
- * Login user
+ * Register user
  */
-export const POST_LOGIN = 'POST_LOGIN';
-export const postLogin = (values) => ({
+export const REGISTER_USER = 'REGISTER_USER';
+export const register = (values) => ({
   [CALL_API]: {
-    type: POST_LOGIN,
-    url: `/api/users/auth`,
+    type: REGISTER_USER,
+    url: `/api/users`,
     method: 'POST',
     body: values,
-  },
-});
-
-/**
- * Refresh jwt-token
- */
-export const GET_LOGIN = 'GET_LOGIN';
-export const fetchLogin = (refreshToken) => ({
-  [CALL_API]: {
-    type: GET_LOGIN,
-    url: `/api/users/auth/${refreshToken}`,
-    method: 'GET',
-    restricted: true,
   },
 });
