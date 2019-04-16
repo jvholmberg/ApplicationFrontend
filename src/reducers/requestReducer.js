@@ -23,32 +23,47 @@ export default (state = defaultState, action) => {
 
   const requestStatus = getRequestStatus(action.type);
   const actionType = getActionType(action.type);
-  console.log(action);
   switch (requestStatus) {
     case 'PENDING':
       return Object.assign({}, state, {
         [actionType]: {
+          valid: true,
           pending: true,
           success: false,
           failed: false,
+          queued: false,
         },
       });
     case 'SUCCESS':
       return Object.assign({}, state, {
         [actionType]: {
+          valid: true,
           pending: false,
           success: true,
           failed: false,
+          queued: false,
           response: action.response,
         },
       });
     case 'FAILURE':
       return Object.assign({}, state, {
         [actionType]: {
+          valid: false,
           pending: false,
           success: false,
           failed: true,
+          queued: false,
           error: action.error,
+        },
+      });
+    case 'QUEUED':
+      return Object.assign({}, state, {
+        [actionType]: {
+          valid: true,
+          pending: false,
+          success: false,
+          failed: false,
+          queued: true,
         },
       });
     default:

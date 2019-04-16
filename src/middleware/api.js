@@ -1,5 +1,11 @@
 import _ from 'lodash';
-import { normalize } from 'normalizr';
+import moment from 'moment';
+import { format } from 'util';
+import { GET_LOGIN } from '../actions';
+import {
+  getJwtToken,
+  removeJwtToken,
+} from '../utils/localStorage';
 
 const API_ROOT = process.env.NODE_ENV === 'production'
   ? 'https://forkyfork.com'
@@ -7,23 +13,65 @@ const API_ROOT = process.env.NODE_ENV === 'production'
 
 // Fetches an API response and normalizes the result JSON according to schema.
 // This makes every API response have the same shape, regardless of how nested it was.
-const callApi = (url, schema, method, query, body) => {
+const makeRequest = (url, method, query, body, restricted, next) => {
 
-  const fullUrl = url.indexOf(API_ROOT) === -1
+  // If url starts with '/' add prefix with API_ROOT
+  const fullUrl = url.indexOf('/') === 0
     ? API_ROOT + url
     : url;
+
+  // Set default headers
+  const headers = {
+    'Content-Type': 'application/json',
+    'Accept': 'application/json',
+  };
+
+  // If restricted route get tokens
+  if (restricted) {
+    // Make sure all data is present
+    let jwt = getJwtToken();
+    if (!jwt || !jwt.accessToken || !jwt.refreshToken || !jwt.expiry) {
+      jwt = removeJwtToken();
+    }
+  
+    // Check if expired or within grace period
+    if (jwt) {
+      const now = moment.utc();
+      const grace = now.utcOffset('-24:00');
+      const expiry = moment(jwt.expiry);
+
+      // Check if expired
+      if (expiry.isSameOrBefore(now)) {
+        jwt = removeJwtToken();
+      }
+
+      // Check if within grace period (24hours)
+      if (jwt && grace.isSameOrBefore(now)) {
+        next({ type: `REQ:${GET_LOGIN}/QUEUE` });
+      }
+
+      // Add Authorization header if valid accessToken
+      if (jwt && jwt.accessToken) {
+        headers['Authorization'] = `Bearer ${jwt.accessToken}`;
+      }
+    }
+  }
+
+  // Make request
   return fetch(fullUrl, {
     method,
-    headers: {
-      'Content-Type': 'application/json',
-      'Accept': 'application/json',
-    },
+    headers,
     query,
     body: JSON.stringify(body),
     mode: 'cors',
-  })
-    .then((res) => Object.assign({}, normalize(res, schema)))
-    .catch((err) => Promise.reject(err));
+  }).then((res) =>
+    res.json()
+      .then((json) => {
+        if (!res.ok) {
+          return Promise.reject(json)
+        }
+        return Promise.resolve(json);
+      }));
 };
 
 export const CALL_API = 'CALL_API';
@@ -41,17 +89,14 @@ export default (store) => (next) => (action) => {
   // Make sure url, type, schema is provided
   const {
     type,
-    schema,
     url,
     method,
     query,
     body,
+    restricted,
   } = callAPI;
   if (!_.isString(type)) {
     throw new Error('Expected type to be string.');
-  }
-  if (!schema) {
-    throw new Error('Expected schema to be provided.');
   }
   if (!_.isString(url)) {
     throw new Error('Must specify a string url.');
@@ -60,21 +105,32 @@ export default (store) => (next) => (action) => {
     throw new Error('Expected method to be one of GET, POST, PUT, DELETE or PATCH.');
   }
 
+  // Exit if request is valid, pending or queued
+  const {
+    valid,
+    pending,
+    queued,
+  } = _.get(store.getState(), `requests.${type}`, {});
+  if (valid || pending || queued) {
+    return;
+  }
+
   // Clean action
   const actionWith = (data) => {
     const finalAction = Object.assign({}, action, data);
     delete finalAction[CALL_API];
     return finalAction;
   }
+
   // Mark request as pending and make call
   next(actionWith({ type: `REQ:${type}:PENDING` }));
-  return callApi(url, schema, method, query, body)
+  return makeRequest(url, method, query, body, restricted, next)
     .then((res) => next(actionWith({
       type: `REQ:${type}/SUCCESS`,
       response: res,
     })))
     .catch((err) => next(actionWith({
       type: `REQ:${type}/FAILURE`,
-      error: err.message || 'Something bad happened'
+      error: err,
     })));
 };

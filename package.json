@@ -4,10 +4,11 @@
   "private": true,
   "dependencies": {
     "carbon-components": "^10.0.0",
-    "carbon-components-react": "^7.0.0",
+    "carbon-components-react": "^7.1.0",
     "carbon-icons": "^7.0.7",
     "formik": "^1.5.2",
     "lodash": "^4.17.11",
+    "moment": "^2.24.0",
     "normalizr": "^3.3.0",
     "prop-types": "^15.7.2",
     "react": "^16.8.6",

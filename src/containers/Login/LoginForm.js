@@ -6,6 +6,7 @@ import {
   Form,
   TextInput,
   TextInputSkeleton,
+  InlineNotification,
   Button,
   ButtonSkeleton,
 } from 'carbon-components-react';
@@ -74,6 +75,13 @@ const LoginForm = (props) => (
                 kind='primary'>
                 Log in
               </Button>
+              {props.error && (
+                <InlineNotification
+                  kind="error"
+                  title={props.error.title || 'Error'}
+                  subtitle={props.error.message}
+                  hideCloseButton />
+              )}
             </Col>
           </Row>
         </Grid>
