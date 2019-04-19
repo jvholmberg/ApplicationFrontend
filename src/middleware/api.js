@@ -47,7 +47,7 @@ const makeRequest = (url, method, query, body, restricted, next) => {
 
       // Check if within grace period (24hours)
       if (jwt && grace.isSameOrBefore(now)) {
-        next({ type: `REQ:${REFRESH_JWT}/QUEUE` });
+        next({ type: `REQ:${REFRESH_JWT}/QUEUED` });
       }
 
       // Add Authorization header if valid accessToken
@@ -105,13 +105,13 @@ export default (store) => (next) => (action) => {
     throw new Error('Expected method to be one of GET, POST, PUT, DELETE or PATCH.');
   }
 
-  // Exit if request is valid, pending or queued
+  console.log(action);
+  // Exit if request is valid or pending
   const {
     valid,
     pending,
-    queued,
   } = _.get(store.getState(), `requests.${type}`, {});
-  if (valid || pending || queued) {
+  if (valid || pending) {
     return;
   }
 

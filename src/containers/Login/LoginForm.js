@@ -40,7 +40,6 @@ const LoginForm = (props) => (
           <Row>
             <Col sm='4'>
               <TextInput
-              style={{ width: '100%' }}
                 id='login-email'
                 name='email'
                 type='text'
