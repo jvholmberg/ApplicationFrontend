@@ -1,6 +1,6 @@
 import _ from 'lodash';
 import { bindActionCreators } from 'redux';
-import { getJwt } from '../../actions';
+import { getJwt, validateJwt } from '../../actions';
 import {
   reqGetJwt,
   resGetJwt,
@@ -19,4 +19,5 @@ export const mapStateToProps = (state, props) => {
 export const mapDispatchToProps = (dispatch) =>
   bindActionCreators({
     getJwt,
+    validateJwt,
   }, dispatch);

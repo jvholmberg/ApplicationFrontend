@@ -14,6 +14,19 @@ export const getJwt = (values) => ({
 });
 
 /**
+ * Validate jwt-token
+ */
+export const VALIDATE_JWT = 'VALIDATE_JWT';
+export const validateJwt = () => ({
+  [CALL_API]: {
+    type: VALIDATE_JWT,
+    url: `/api/users/auth`,
+    method: 'GET',
+    restricted: true,
+  },
+});
+
+/**
  * Refresh jwt-token
  */
 export const REFRESH_JWT = 'REFRESH_JWT';

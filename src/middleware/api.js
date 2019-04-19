@@ -36,9 +36,9 @@ const makeRequest = (url, method, query, body, restricted, next) => {
   
     // Check if expired or within grace period
     if (jwt) {
-      const now = moment.utc();
-      const grace = now.utcOffset('-24:00');
+      const now = moment();
       const expiry = moment(jwt.expiry);
+      const grace = moment(jwt.expiry).subtract(1, 'day');
 
       // Check if expired
       if (expiry.isSameOrBefore(now)) {

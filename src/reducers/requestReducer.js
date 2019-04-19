@@ -28,7 +28,7 @@ export default (state = defaultState, action) => {
     case 'PENDING':
       return Object.assign({}, state, {
         [actionType]: {
-          valid: true,
+          valid: false,
           pending: true,
           failed: false,
           queued: false,
