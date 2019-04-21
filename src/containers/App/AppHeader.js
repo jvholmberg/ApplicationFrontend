@@ -1,4 +1,5 @@
 import React from 'react';
+import { NavLink, Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 
 const Skeleton = (props) => (
@@ -6,11 +7,19 @@ const Skeleton = (props) => (
 );
 
 const Unauthorized = (props) => (
-  null
+  <div>
+    <Link to='/'>Landing</Link>
+    <Link to='/login'>Login</Link>
+    <Link to='/register'>Register</Link>
+  </div>
 );
 
 const Authorized = (props) => (
-  null
+  <div>
+    <Link to='/'>Landing</Link>
+    <Link to='/dashboard'>Dashboard</Link>
+    <button onClick={props.logout}>Logout</button>
+  </div>
 );
 
 const AppHeader = (props) => {

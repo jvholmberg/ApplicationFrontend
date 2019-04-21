@@ -94,6 +94,7 @@ export default (store) => (next) => (action) => {
     query,
     body,
     restricted,
+    withForce,
   } = callAPI;
   if (!_.isString(type)) {
     throw new Error('Expected type to be string.');
@@ -105,13 +106,15 @@ export default (store) => (next) => (action) => {
     throw new Error('Expected method to be one of GET, POST, PUT, DELETE or PATCH.');
   }
 
-  console.log(action);
-  // Exit if request is valid or pending
+  // Get status of request
   const {
     valid,
     pending,
   } = _.get(store.getState(), `requests.${type}`, {});
-  if (valid || pending) {
+
+  // Ignore request if valid or pending unless using force
+  if (!withForce
+    && (valid || pending)) {
     return;
   }
 
@@ -123,7 +126,7 @@ export default (store) => (next) => (action) => {
   }
 
   // Mark request as pending and make call
-  next(actionWith({ type: `REQ:${type}:PENDING` }));
+  next(actionWith({ type: `REQ:${type}/PENDING` }));
   return makeRequest(url, method, query, body, restricted, next)
     .then((res) => next(actionWith({
       type: `REQ:${type}/SUCCESS`,

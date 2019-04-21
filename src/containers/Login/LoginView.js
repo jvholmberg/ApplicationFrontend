@@ -15,7 +15,6 @@ class LoginView extends PureComponent {
 
     if (prevLoginResponse.accessToken !== loginResponse.accessToken) {
       setJwtToken(loginResponse);
-      props.validateJwt();
     }
   }
 

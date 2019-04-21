@@ -23,7 +23,7 @@ export default (state = defaultState, action) => {
 
   const requestStatus = getRequestStatus(action.type);
   const actionType = getActionType(action.type);
-  console.log(state, action);
+  console.log(state, action, requestStatus);
   switch (requestStatus) {
     case 'PENDING':
       return Object.assign({}, state, {

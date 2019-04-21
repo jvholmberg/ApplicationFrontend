@@ -1,12 +1,18 @@
 import React, { PureComponent, Fragment } from 'react';
 import PropTypes from 'prop-types';
 
-import { getJwtToken } from '../../utils/localStorage';
+import { getJwtToken, removeJwtToken } from '../../utils/localStorage';
 
 import AppHeader from './AppHeader';
 import AppRoutes from './AppRoutes';
 
 class AppView extends PureComponent {
+
+  logout = () => {
+    const { props } = this;
+    props.destroyJwt();
+    removeJwtToken();
+  }
 
   componentDidMount() {
     const { props } = this;
@@ -20,13 +26,18 @@ class AppView extends PureComponent {
 
   componentDidUpdate(prevProps) {
     const { props } = this;
+    // Re evaluate jwt-token
+    if ((prevProps.pendingGetJwt && props.validGetJwt)
+      || (prevProps.pendingDestroyJwt && props.validDestroyJwt)) {
+        props.validateJwt(true);
+      }
 
     // Refresh jwt-token if queued
     if (!prevProps.queuedRefreshJwt
       && props.queuedRefreshJwt
       && !props.pendingRefreshToken) {
         const jwt = getJwtToken();
-        props.refreshJwt(jwt.refreshToken);
+        props.refreshJwt(jwt.refreshToken, true);
       }
   }
 
@@ -35,9 +46,10 @@ class AppView extends PureComponent {
     return (
       <Fragment>
         <AppHeader
-          loggedIn={props.validJwt} />
+          loggedIn={props.validValidateJwt}
+          logout={this.logout} />
         <AppRoutes
-          loggedIn={props.validJwt} />
+          loggedIn={props.validValidateJwt} />
       </Fragment>
     );
   }
